@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 public class AuthServiceImpl implements AuthService {
 
     private final UserEntityRepository userEntityRepository;
-
     private final EmailService emailService;
 
 

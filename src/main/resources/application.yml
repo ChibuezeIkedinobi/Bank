@@ -29,8 +29,8 @@ spring:
           auth: true
           starttls:
             enable: true
-          ssl:
-            enable: true
+            ssl:
+              enable: true
 
 server:
   port: 8082

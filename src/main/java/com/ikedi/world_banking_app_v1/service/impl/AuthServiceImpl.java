@@ -22,6 +22,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserEntityRepository userEntityRepository;
 
     private final EmailService emailService;
+
+
     @Override
     public BankResponse registerUser(UserRequest userRequest) {
 

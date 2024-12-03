@@ -1,0 +1,14 @@
+services:
+  database:
+    image: bitnami/mysql:latest  # Docker image for MySQL
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bankingAPP
+      MYSQL_USER: bank
+      MYSQL_PASSWORD: root
+    ports:
+      - 11121:3306
+    volumes:
+      - ./db/my.cnf:/etc/mysql/my.cnf  # Correct volume mapping
+

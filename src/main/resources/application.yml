@@ -1,0 +1,36 @@
+
+spring:
+  application:
+    name: world-banking-app-v1
+
+  datasource:
+    url: jdbc:mysql://localhost:11121/bankingAPP
+    username: bank
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+    hibernate:
+      ddl-auto: create-drop
+
+  mail:
+    host: smtp.gmail.com
+    port: 25
+    username: ikdinobi@gmail.com
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            ssl:
+              enable: true
+
+server:
+  port: 8082

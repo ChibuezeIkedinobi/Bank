@@ -8,6 +8,8 @@ import com.ikedi.world_banking_app_v1.payload.response.BankResponse;
 import com.ikedi.world_banking_app_v1.repository.UserEntityRepository;
 import com.ikedi.world_banking_app_v1.service.AuthService;
 import com.ikedi.world_banking_app_v1.utils.AccountUtils;
+import com.ikedi.world_banking_app_v1.utils.mail.EmailDetails;
+import com.ikedi.world_banking_app_v1.utils.mail.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,8 @@ import java.math.BigDecimal;
 public class AuthServiceImpl implements AuthService {
 
     private final UserEntityRepository userEntityRepository;
+
+    private final EmailService emailService;
     @Override
     public BankResponse registerUser(UserRequest userRequest) {
 
@@ -35,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
                 .otherName(userRequest.getOtherName())
                 .gender(userRequest.getGender())
                 .address(userRequest.getAddress())
-                .accountNumber(AccountUtils.generateAccountNumber())
+                .accountNumber(AccountUtils.generateAccountNumber(userEntityRepository))
                 .accountBalance(BigDecimal.ZERO)
                 .email(userRequest.getEmail())
                 .password(userRequest.getPassword())
@@ -47,6 +51,21 @@ public class AuthServiceImpl implements AuthService {
 
         UserEntity  savedUser = userEntityRepository.save(newUser);
 
+        EmailDetails emailDetails = EmailDetails.builder()
+                .subject("Welcome to Kaki Bank - Account Created Successfully!")
+                .recipient(savedUser.getEmail())
+                .messageBody("Dear " + savedUser.getFirstName() + " " + savedUser.getLastName() + ",\n\n" +
+                        "Congratulations! Your bank account has been successfully created.\n\n" +
+                        "Account Details:\n" +
+                        "Account Name: " + savedUser.getFirstName() + " " + savedUser.getLastName() + " " + savedUser.getOtherName() + "\n" +
+                        "Account Number: " + savedUser.getAccountNumber() + "\n" +
+                        "Account Balance: NGN " + savedUser.getAccountBalance() + "\n\n" +
+                        "Thank you for choosing World Banking App. We are excited to serve you.\n" +
+                        "Best regards,\n" +
+                        "Kaki Banking App Team")
+                .build();
+        emailService.sendEmailAlert(emailDetails);
+
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREATION_SUCCESSFUL)
                 .responseMessage(AccountUtils.ACCOUNT_CREATION_SUCCESS_MESSAGE)
@@ -56,6 +75,8 @@ public class AuthServiceImpl implements AuthService {
                         .accountName(savedUser.getFirstName()+" "+savedUser.getLastName()+" "+savedUser.getOtherName())
                         .build())
                 .build();
+
+
     }
 
 

@@ -29,6 +29,7 @@ public class AuthServiceImpl implements AuthService {
         if (userEntityRepository.existsByEmail(userRequest.getEmail())) {
             BankResponse response = BankResponse.builder()
                     .responseCode(AccountUtils.ACCOUNT_EXISTS_CODE)
+                    .responseMessage(AccountUtils.ACCOUNT_EXISTS_MESSAGE)
                     .accountInfo(null)
                     .build();
 
@@ -40,6 +41,7 @@ public class AuthServiceImpl implements AuthService {
                 .otherName(userRequest.getOtherName())
                 .gender(userRequest.getGender())
                 .address(userRequest.getAddress())
+                .stateOfOrigin(userRequest.getStateOfOrigin())
                 .accountNumber(AccountUtils.generateAccountNumber(userEntityRepository))
                 .accountBalance(BigDecimal.ZERO)
                 .email(userRequest.getEmail())

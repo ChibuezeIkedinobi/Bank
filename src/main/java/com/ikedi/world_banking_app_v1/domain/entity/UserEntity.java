@@ -1,15 +1,14 @@
 package com.ikedi.world_banking_app_v1.domain.entity;
 
 import com.ikedi.world_banking_app_v1.domain.enums.Role;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Builder
@@ -39,5 +38,9 @@ public class UserEntity extends BaseClass {
     private Role role;
 
     private String status;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Transaction> transactions = new ArrayList<>();
+
 
 }

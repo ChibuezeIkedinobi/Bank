@@ -14,5 +14,5 @@ public interface UserService {
 
     BankResponse transfer(TransferRequest request);
 
-    BankResponse nameEnquiry(EnquiryRequest request);
+    BankResponse statementEnquiry(EnquiryRequest request);
 }

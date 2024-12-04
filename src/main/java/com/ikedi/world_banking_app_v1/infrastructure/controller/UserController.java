@@ -36,4 +36,9 @@ public class UserController {
     public ResponseEntity<BankResponse> transfer(@Valid @RequestBody TransferRequest request) {
         return ResponseEntity.ok(userService.transfer(request));
     }
+
+    @PostMapping("/statement")
+    public ResponseEntity<BankResponse> statementEnquiry(@Valid @RequestBody EnquiryRequest request) {
+        return ResponseEntity.ok(userService.statementEnquiry(request));
+    }
 }

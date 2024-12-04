@@ -14,3 +14,5 @@ public class EnquiryRequest {
     private String accountNumber;
 
 }
+
+

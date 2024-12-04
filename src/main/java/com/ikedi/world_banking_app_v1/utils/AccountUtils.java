@@ -6,6 +6,7 @@ import java.time.Year;
 
 public class AccountUtils {
 
+    public static final String ERROR = "000";
     public static final String ACCOUNT_EXISTS_CODE = "001";
     public static final String ACCOUNT_EXISTS_MESSAGE = "This user already has an account created🚨🚨";
 

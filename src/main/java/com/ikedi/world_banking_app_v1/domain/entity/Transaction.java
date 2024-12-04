@@ -39,7 +39,7 @@ public class Transaction extends BaseClass {
     private String description;
 
     @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime transactionDate = LocalDateTime.now();
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime transactionDate;
 
 }

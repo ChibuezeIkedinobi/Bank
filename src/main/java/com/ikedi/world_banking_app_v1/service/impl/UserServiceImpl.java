@@ -12,6 +12,7 @@ import com.ikedi.world_banking_app_v1.repository.TransactionRepository;
 import com.ikedi.world_banking_app_v1.repository.UserEntityRepository;
 import com.ikedi.world_banking_app_v1.service.UserService;
 import com.ikedi.world_banking_app_v1.utils.AccountUtils;
+import com.ikedi.world_banking_app_v1.utils.DateUtils;
 import com.ikedi.world_banking_app_v1.utils.mail.EmailDetails;
 import com.ikedi.world_banking_app_v1.utils.mail.EmailService;
 import com.ikedi.world_banking_app_v1.utils.sms.SmsService;
@@ -252,7 +253,7 @@ public class UserServiceImpl implements UserService {
         if (sourceAccountUser == null) {
             return BankResponse.builder()
                     .responseCode(AccountUtils.ACCOUNT_NUMBER_NON_EXISTS_CODE)
-                    .responseMessage("Source account does not exist.")
+                    .responseMessage("Source account does not exist.🚨🚨")
                     .accountInfo(null)
                     .build();
         }
@@ -261,7 +262,15 @@ public class UserServiceImpl implements UserService {
         if (destinationAccountUser == null) {
             return BankResponse.builder()
                     .responseCode(AccountUtils.ACCOUNT_NUMBER_NON_EXISTS_CODE)
-                    .responseMessage("Destination account does not exist.")
+                    .responseMessage("Destination account does not exist.🚨🚨")
+                    .accountInfo(null)
+                    .build();
+        }
+
+        if (sourceAccountUser.getAccountNumber().equals(destinationAccountUser.getAccountNumber())) {
+            return BankResponse.builder()
+                    .responseCode(AccountUtils.ERROR)
+                    .responseMessage("Transfers to the same account are not allowed🚨🚨")
                     .accountInfo(null)
                     .build();
         }
@@ -425,24 +434,53 @@ public class UserServiceImpl implements UserService {
             contentStream.showText("Transactions:");
             contentStream.newLine();
 
+            float yPosition = 750; // Start position for text
             for (Transaction transaction : transactions) {
-                contentStream.showText("Date: " + transaction.getTransactionDate());
+                // Check if a new page is needed
+                if (yPosition < 100) { // Limit for current page (bottom margin)
+                    contentStream.endText();
+                    contentStream.close();
+
+                    // Add a new page
+                    page = new PDPage(PDRectangle.A4);
+                    document.addPage(page);
+                    contentStream = new PDPageContentStream(document, page);
+                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contentStream.beginText();
+                    contentStream.setLeading(14.5f);
+                    contentStream.newLineAtOffset(50, 750);
+
+                    yPosition = 750; // Reset yPosition for new page
+                }
+
+                // Write transaction details
+                contentStream.showText("Date: " + DateUtils.formatDateTimeWithoutMilliseconds(transaction.getTransactionDate()));
                 contentStream.newLine();
+                yPosition -= 14.5;
+
                 contentStream.showText("Type: " + transaction.getTransactionType());
                 contentStream.newLine();
+                yPosition -= 14.5;
+
                 contentStream.showText("Amount: " + transaction.getAmount());
                 contentStream.newLine();
+                yPosition -= 14.5;
+
                 contentStream.showText("Post-Balance: " + transaction.getPostTransactionBalance());
                 contentStream.newLine();
+                yPosition -= 14.5;
+
                 contentStream.showText("Description: " + transaction.getDescription());
                 contentStream.newLine();
+                yPosition -= 14.5;
+
                 contentStream.newLine();
+                yPosition -= 14.5;
             }
 
             contentStream.endText();
             contentStream.close();
             document.save(pdfOutputStream);
-            document.close();
 
             //Encrypting the PDF
             String password = user.getAccountNumber().substring(Math.max(0, user.getAccountNumber().length() - 6));
@@ -498,6 +536,5 @@ public class UserServiceImpl implements UserService {
                     .accountInfo(null)
                     .build();
         }
-
     }
 }

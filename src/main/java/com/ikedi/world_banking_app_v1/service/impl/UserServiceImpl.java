@@ -416,7 +416,7 @@ public class UserServiceImpl implements UserService {
             document.addPage(newPage);
 
             PDPageContentStream contentStream = new PDPageContentStream(document, newPage);
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 9);
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
             contentStream.beginText();
             contentStream.setLeading(14.5f);
             contentStream.newLineAtOffset(50, 750);
@@ -448,7 +448,7 @@ public class UserServiceImpl implements UserService {
                     PDPage page = new PDPage(PDRectangle.A4);
                     document.addPage(page);
                     contentStream = new PDPageContentStream(document, page);
-                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 9);
+                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 10);
                     contentStream.beginText();
                     contentStream.setLeading(lineHeight);
                     contentStream.newLineAtOffset(margin, 750); // Reset offset for the new page

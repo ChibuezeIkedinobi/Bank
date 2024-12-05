@@ -412,11 +412,11 @@ public class UserServiceImpl implements UserService {
             ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
             PDDocument document = new PDDocument();
 
-            PDPage newPage = new PDPage(PDRectangle.LETTER);
+            PDPage newPage = new PDPage(PDRectangle.A4);
             document.addPage(newPage);
 
             PDPageContentStream contentStream = new PDPageContentStream(document, newPage);
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 9);
             contentStream.beginText();
             contentStream.setLeading(14.5f);
             contentStream.newLineAtOffset(50, 750);

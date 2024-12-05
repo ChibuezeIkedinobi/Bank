@@ -412,10 +412,10 @@ public class UserServiceImpl implements UserService {
             ByteArrayOutputStream pdfOutputStream = new ByteArrayOutputStream();
             PDDocument document = new PDDocument();
 
-            PDPage page = new PDPage(PDRectangle.A4);
-            document.addPage(page);
+            PDPage newPage = new PDPage(PDRectangle.LETTER);
+            document.addPage(newPage);
 
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            PDPageContentStream contentStream = new PDPageContentStream(document, newPage);
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.beginText();
             contentStream.setLeading(14.5f);
@@ -434,48 +434,47 @@ public class UserServiceImpl implements UserService {
             contentStream.showText("Transactions:");
             contentStream.newLine();
 
-            float yPosition = 750; // Start position for text
+            float yPosition = 750;
+            float margin = 50;
+            float lineHeight = 14.5f;
+
             for (Transaction transaction : transactions) {
                 // Check if a new page is needed
-                if (yPosition < 100) { // Limit for current page (bottom margin)
+                if (yPosition - lineHeight * 4 < margin) {
                     contentStream.endText();
                     contentStream.close();
 
-                    // Add a new page
-                    page = new PDPage(PDRectangle.A4);
+
+                    PDPage page = new PDPage(PDRectangle.A4);
                     document.addPage(page);
                     contentStream = new PDPageContentStream(document, page);
-                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 9);
                     contentStream.beginText();
-                    contentStream.setLeading(14.5f);
-                    contentStream.newLineAtOffset(50, 750);
+                    contentStream.setLeading(lineHeight);
+                    contentStream.newLineAtOffset(margin, 750); // Reset offset for the new page
 
-                    yPosition = 750; // Reset yPosition for new page
+                    yPosition = 750; // Reset yPosition for the new page
                 }
 
-                // Write transaction details
+
                 contentStream.showText("Date: " + DateUtils.formatDateTimeWithoutMilliseconds(transaction.getTransactionDate()));
                 contentStream.newLine();
-                yPosition -= 14.5;
+                yPosition -= lineHeight;
 
                 contentStream.showText("Type: " + transaction.getTransactionType());
                 contentStream.newLine();
-                yPosition -= 14.5;
+                yPosition -= lineHeight;
 
-                contentStream.showText("Amount: " + transaction.getAmount());
+                contentStream.showText("Amount: " + transaction.getAmount() + "        Balance: " + transaction.getPostTransactionBalance());
                 contentStream.newLine();
-                yPosition -= 14.5;
-
-                contentStream.showText("Post-Balance: " + transaction.getPostTransactionBalance());
-                contentStream.newLine();
-                yPosition -= 14.5;
+                yPosition -= lineHeight;
 
                 contentStream.showText("Description: " + transaction.getDescription());
                 contentStream.newLine();
-                yPosition -= 14.5;
+                yPosition -= lineHeight;
 
                 contentStream.newLine();
-                yPosition -= 14.5;
+                yPosition -= lineHeight;
             }
 
             contentStream.endText();

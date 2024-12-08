@@ -39,6 +39,7 @@ public class AccountUtils {
 
     public static final String STATEMENT_GENERATED_CODE = "011";
     public static final String STATEMENT_GENERATED_MESSAGE = "Bank statement has been successfully generated and sent to your email.✅✅";
+    public static final String INVALID_DATE_RANGE_CODE = "012";
 
 
     public static String generateAccountNumber(UserEntityRepository userEntityRepository) {

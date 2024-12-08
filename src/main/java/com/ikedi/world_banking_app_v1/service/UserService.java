@@ -5,6 +5,8 @@ import com.ikedi.world_banking_app_v1.payload.request.TransferRequest;
 import com.ikedi.world_banking_app_v1.payload.response.BankResponse;
 import com.ikedi.world_banking_app_v1.payload.request.EnquiryRequest;
 
+import java.time.LocalDate;
+
 public interface UserService {
     BankResponse balanceEnquiry(EnquiryRequest enquiryRequest);
 
@@ -14,5 +16,5 @@ public interface UserService {
 
     BankResponse transfer(TransferRequest request);
 
-    BankResponse statementEnquiry(EnquiryRequest request);
+    BankResponse statementEnquiry(EnquiryRequest request, LocalDate startDate, LocalDate endDate);
 }

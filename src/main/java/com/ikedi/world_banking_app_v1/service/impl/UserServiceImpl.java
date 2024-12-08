@@ -29,8 +29,10 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -146,12 +148,12 @@ public class UserServiceImpl implements UserService {
                 .build();
         emailService.sendEmailAlert(emailDetails);
 
-        String smsMessage = String.format(
-                "Dear %s, your account has been credited with %s. New balance: %s.",
-                userToCredit.getFirstName(), request.getAmount().toPlainString(),
-                userToCredit.getAccountBalance().toPlainString()
-        );
-        smsService.sendSms(userToCredit.getPhoneNumber(), smsMessage);
+//        String smsMessage = String.format(
+//                "Dear %s, your account has been credited with %s. New balance: %s.",
+//                userToCredit.getFirstName(), request.getAmount().toPlainString(),
+//                userToCredit.getAccountBalance().toPlainString()
+//        );
+//        smsService.sendSms(userToCredit.getPhoneNumber(), smsMessage);
 
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_CREDITED_SUCCESS_CODE)
@@ -227,12 +229,12 @@ public class UserServiceImpl implements UserService {
                 .build();
         emailService.sendEmailAlert(debitAlert);
 
-        String smsMessage = String.format(
-                "Dear %s, your account has been debited with %s. Remaining balance: %s.",
-                userToDebit.getFirstName(), request.getAmount().toPlainString(),
-                userToDebit.getAccountBalance().toPlainString()
-        );
-        smsService.sendSms(userToDebit.getPhoneNumber(), smsMessage);
+//        String smsMessage = String.format(
+//                "Dear %s, your account has been debited with %s. Remaining balance: %s.",
+//                userToDebit.getFirstName(), request.getAmount().toPlainString(),
+//                userToDebit.getAccountBalance().toPlainString()
+//        );
+//        smsService.sendSms(userToDebit.getPhoneNumber(), smsMessage);
 
         return BankResponse.builder()
                 .responseCode(AccountUtils.ACCOUNT_DEBITED_CODE)
@@ -386,7 +388,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BankResponse statementEnquiry(EnquiryRequest request) {
+    public BankResponse statementEnquiry(EnquiryRequest request, LocalDate startDate, LocalDate endDate) {
+        // Validate the date range
+        if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+            return BankResponse.builder()
+                    .responseCode(AccountUtils.INVALID_DATE_RANGE_CODE)
+                    .responseMessage("Start date cannot be after end date.")
+                    .build();
+        }
 
         boolean isAccountExisting = userEntityRepository.existsByAccountNumber(request.getAccountNumber());
 
@@ -399,13 +408,21 @@ public class UserServiceImpl implements UserService {
         }
 
         UserEntity user = userEntityRepository.findByAccountNumber(request.getAccountNumber());
-        List<Transaction> transactions = transactionRepository.findByUser(user);
+
+        List<Transaction> transactions = transactionRepository.findByUser(user).stream()
+                .filter(transaction -> (startDate == null || !transaction.getTransactionDate().toLocalDate().isBefore(startDate)) &&
+                        (endDate == null || !transaction.getTransactionDate().toLocalDate().isAfter(endDate)))
+                .toList();
 
         if (transactions.isEmpty()) {
             return BankResponse.builder()
                     .responseCode(AccountUtils.NO_TRANSACTIONS_FOUND_CODE)
                     .responseMessage(AccountUtils.NO_TRANSACTIONS_FOUND_MESSAGE)
-                    .accountInfo(null)
+                    .accountInfo(AccountInfo.builder()
+                            .accountName(user.getFirstName() + " " + user.getLastName())
+                            .accountNumber(user.getAccountNumber())
+                            .accountBalance(user.getAccountBalance())
+                            .build())
                     .build();
         }
         try {

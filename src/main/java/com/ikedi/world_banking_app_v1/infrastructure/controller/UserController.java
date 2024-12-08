@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
@@ -38,7 +40,9 @@ public class UserController {
     }
 
     @PostMapping("/statement")
-    public ResponseEntity<BankResponse> statementEnquiry(@Valid @RequestBody EnquiryRequest request) {
-        return ResponseEntity.ok(userService.statementEnquiry(request));
+    public ResponseEntity<BankResponse> statementEnquiry(@Valid @RequestBody EnquiryRequest request,
+                                                         @RequestParam(required = false) LocalDate startDate,
+                                                         @RequestParam(required = false) LocalDate endDate) {
+        return ResponseEntity.ok(userService.statementEnquiry(request, startDate, endDate));
     }
 }
